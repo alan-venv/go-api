@@ -13,6 +13,7 @@ func ConfigRoutes(router *gin.Engine) *gin.Engine {
 		{
 			books.GET("/", controllers.ReadUsers)
 			books.GET("/:id", controllers.ReadUser)
+			books.POST("/", controllers.CreateUser)
 		}
 	}
 

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"example/go-api/src/models"
 	repository "example/go-api/src/repositories"
 	"net/http"
 	"strconv"
@@ -39,4 +40,26 @@ func ReadUser(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, user)
+}
+
+func CreateUser(c *gin.Context) {
+	var user models.User
+
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{
+			"error": "cannot bind json",
+		})
+		return
+	}
+
+	err = repository.CreateUser(user)
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{
+			"error": "cannot create user: " + err.Error(),
+		})
+		return
+	}
+
+	c.Status(http.StatusCreated)
 }
