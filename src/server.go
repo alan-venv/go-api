@@ -3,12 +3,19 @@ package main
 import (
 	"example/go-api/src/database"
 	"example/go-api/src/routes"
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	err := os.Remove("test.db") // remove a single file
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	database.Start()
 	gin.SetMode(gin.ReleaseMode)
 
