@@ -1,0 +1,13 @@
+{
+  "api": {
+    "port": 8000,
+    "mode": "release"
+  },
+  "database": {
+    "host": "",
+    "port": "",
+    "user": "",
+    "pass": "",
+    "name": ""
+  }
+}
