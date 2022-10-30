@@ -1,0 +1,43 @@
+- Criar um postgres no docker
+docker run -d --name my-db -p 5432:5432 -e POSTGRES_PASSWORD=admin postgres
+
+- Entrar no postgres do docker
+docker exec -it my-db psql -U postgres
+
+- Criar o primeiro banco de dados
+create database gorm;
+
+- Listar bancos de dados
+\l
+
+- Conectar a um banco de dados
+\c gorm
+
+- Listar as tabelas de um banco de dados
+\dt
+
+
+
+====================================================================================
+
+
+1º - Models
+2º - Configs
+3º - Database
+4º - Repositories
+5º - Controllers        (Business rules)
+6º - Routes
+7º - Server             (Smoke tests)
+
+=====================
+
+1º - Models
+2º - Configs
+3º - Database
+4º - Repositories
+5º - Use cases          (Business rules)
+6º - Unitaries tests
+7º - Controllers
+8º - Routes
+9º - Server             (Smoke tests)
+

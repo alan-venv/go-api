@@ -1,4 +1,4 @@
-FROM golang:1.19.2 AS build
+FROM golang:latest AS build
 
 WORKDIR /app
 
@@ -10,12 +10,10 @@ FROM gcr.io/distroless/base-debian11
 
 WORKDIR /
 
-COPY --from=build /app/config.json .
-COPY --from=build /app/test.db .
 COPY --from=build /app/server .
 
 EXPOSE 8080
 
-#USER nonroot:nonroot
+USER nonroot:nonroot
 
 ENTRYPOINT [ "/server" ]
