@@ -1,41 +1,34 @@
 version: "3.7"
 
 services:
-  postgres:
-    image: postgres:alpine
-    container_name: "my-db"
-    volumes:
-      - db_data:/var/lib/postgresql/data
+  mongodb:
+    image: mongo
+    container_name: "mongodb"
     ports:
-      - "5432:5432"
+      - "27017:27017"
+    command:
+      - "--logpath"
+      - "/var/log/mongodb/mongod.log"
+      - "--quiet"
     environment:
-      POSTGRES_DB: "default"
-      POSTGRES_USER: "admin"
-      POSTGRES_PASSWORD: "admin"
-    healthcheck:
-      test: [ "CMD-SHELL", "sh -c 'pg_isready -U admin -d default'" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      MONGO_INITDB_ROOT_USERNAME: "venv"
+      MONGO_INITDB_ROOT_PASSWORD: "secret"
+    volumes:
+      - mongodb_data:/data/db
 
   api:
     build: .
-    image: my-api
-    container_name: "my-api"
-    environment:
-      DB_HOST: "postgres" # SERVICE NAME ^
-      DB_NAME: "default"
-      DB_USER: "admin"
-      DB_PASSWORD: "admin"
-      DB_PORT: "5432"
-      API_PORT: "8080"
-      API_MODE: "release"
+    image: go-api
+    container_name: "go-api"
     ports:
       - "8080:8080"
+    environment:
+      DB_CONNSTRING: "mongodb://venv:secret@mongodb:27017"
+      API_PORT: "8080"
+      API_MODE: "release"
     depends_on:
-      postgres:
-        condition: service_healthy
+      - "mongodb"
 
 volumes:
-  db_data:
-    name: go-api-pg-data
+  mongodb_data:
+    name: "mongodb_data"

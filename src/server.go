@@ -10,7 +10,10 @@ import (
 )
 
 func main() {
+	// Data base
 	database.Start()
+
+	// Gin
 	gin.SetMode(os.Getenv("API_MODE"))
 
 	server := gin.Default()
