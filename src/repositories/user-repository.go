@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// ! ======================
+// ! ========================================
 func ReadUsers() ([]models.User, error) {
 	db := database.Get()
 	collection := db.Collection("user")
@@ -41,7 +41,7 @@ func ReadUsers() ([]models.User, error) {
 	return users, nil
 }
 
-// ! ======================
+// ! ========================================
 func ReadUser(id string) (models.User, error) {
 	db := database.Get()
 	collection := db.Collection("user")
@@ -58,7 +58,7 @@ func ReadUser(id string) (models.User, error) {
 	return user, nil
 }
 
-// ! ======================
+// ! ========================================
 func CreateUser(user models.User) error {
 	db := database.Get()
 	collection := db.Collection("user")
@@ -73,6 +73,8 @@ func CreateUser(user models.User) error {
 	}
 	return nil
 }
+
+// ! ========================================
 
 // ! ========================================
 func DeleteUser(id string) error {
