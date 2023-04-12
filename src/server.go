@@ -1,8 +1,7 @@
 package main
 
 import (
-	"example/go-api/src/database"
-	"example/go-api/src/routes"
+	"example/go-api/src/configs"
 	"log"
 	"os"
 
@@ -10,14 +9,10 @@ import (
 )
 
 func main() {
-	// Data base
-	database.Start()
-
-	// Gin
 	gin.SetMode(os.Getenv("API_MODE"))
 
 	server := gin.Default()
-	server = routes.ConfigRoutes(server)
+	server = configs.ServerConfig(server)
 
 	log.Print("Server is running at port: ", os.Getenv("API_PORT"))
 	log.Fatal(server.Run(":" + os.Getenv("API_PORT")))

@@ -2,15 +2,19 @@ package controllers
 
 import (
 	"example/go-api/src/models"
-	repository "example/go-api/src/repositories"
+	"example/go-api/src/repositories"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
+type UserController struct {
+	Repository repositories.IUserRepository
+}
+
 // ! ========================================
-func ReadUsers(c *gin.Context) {
-	users, err := repository.ReadUsers()
+func (self UserController) ReadAll(c *gin.Context) {
+	users, err := self.Repository.ReadAll()
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{
 			"error": "cannot list users: " + err.Error(),
@@ -21,10 +25,10 @@ func ReadUsers(c *gin.Context) {
 }
 
 // ! ========================================
-func ReadUser(c *gin.Context) {
+func (self UserController) Read(c *gin.Context) {
 	id := c.Param("id")
 
-	user, err := repository.ReadUser(id)
+	user, err := self.Repository.Read(id)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{
 			"error": "cannot find user!",
@@ -36,24 +40,25 @@ func ReadUser(c *gin.Context) {
 }
 
 // ! ========================================
-func CreateUser(c *gin.Context) {
+func (self UserController) Create(c *gin.Context) {
 	var user models.User
 
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{
-			"error": "cannot bind json",
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"error":   "cannot bind json",
+			"details": err.Error(),
 		})
 		return
 	}
 
 	//! Business rules here
-	//!
+	//! Like dont duplicated emails, etc...
 	//! -
 
-	err = repository.CreateUser(user)
+	err = self.Repository.Create(user)
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
 			"error": "cannot create user: " + err.Error(),
 		})
 		return
@@ -86,10 +91,10 @@ func CreateUser(c *gin.Context) {
 //	}
 //
 // ! ========================================
-func DeleteUser(c *gin.Context) {
+func (self UserController) Delete(c *gin.Context) {
 	id := c.Param("id")
 
-	err := repository.DeleteUser(id)
+	err := self.Repository.Delete(id)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
 			"error": "cannot find or delete user",

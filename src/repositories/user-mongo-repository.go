@@ -1,20 +1,24 @@
-package repository
+package repositories
 
 import (
 	"context"
 	"errors"
-	"example/go-api/src/database"
 	"example/go-api/src/models"
 	"time"
 
 	"github.com/google/uuid"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
+type UserMongoRepository struct {
+	Database *mongo.Database
+}
+
 // ! ========================================
-func ReadUsers() ([]models.User, error) {
-	db := database.Get()
+func (self UserMongoRepository) ReadAll() ([]models.User, error) {
+	db := self.Database
 	collection := db.Collection("user")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -42,8 +46,8 @@ func ReadUsers() ([]models.User, error) {
 }
 
 // ! ========================================
-func ReadUser(id string) (models.User, error) {
-	db := database.Get()
+func (self UserMongoRepository) Read(id string) (models.User, error) {
+	db := self.Database
 	collection := db.Collection("user")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -59,8 +63,8 @@ func ReadUser(id string) (models.User, error) {
 }
 
 // ! ========================================
-func CreateUser(user models.User) error {
-	db := database.Get()
+func (self UserMongoRepository) Create(user models.User) error {
+	db := self.Database
 	collection := db.Collection("user")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -77,8 +81,8 @@ func CreateUser(user models.User) error {
 // ! ========================================
 
 // ! ========================================
-func DeleteUser(id string) error {
-	db := database.Get()
+func (self UserMongoRepository) Delete(id string) error {
+	db := self.Database
 	collection := db.Collection("user")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
