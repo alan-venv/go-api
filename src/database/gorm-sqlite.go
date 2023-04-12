@@ -3,6 +3,7 @@ package database
 import (
 	"example/go-api/src/models"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -11,34 +12,32 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var connection *gorm.DB
-
-func Get() *gorm.DB {
-	return connection
-}
-
 func clean() {
-	err := os.Remove("test.db")
+	err := os.Remove("sqlite.db")
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func Start() {
+func StartSqlite() *gorm.DB {
 	clean() //! Just for SQLite
 
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{
+	connection, err := gorm.Open(sqlite.Open("sqlite.db"), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {
 		panic("failed to connect database")
 	}
-	connection = db
 
 	config, _ := connection.DB()
 	config.SetMaxIdleConns(10)
 	config.SetMaxOpenConns(100)
 	config.SetConnMaxLifetime(time.Hour)
 
-	connection.AutoMigrate(&models.User{})
+	err = connection.AutoMigrate(&models.User{})
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	return connection
 }

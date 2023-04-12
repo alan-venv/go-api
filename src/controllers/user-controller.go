@@ -12,7 +12,6 @@ type UserController struct {
 	Repository repositories.IUserRepository
 }
 
-// ! ========================================
 func (self UserController) ReadAll(c *gin.Context) {
 	users, err := self.Repository.ReadAll()
 	if err != nil {
@@ -24,7 +23,6 @@ func (self UserController) ReadAll(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, users)
 }
 
-// ! ========================================
 func (self UserController) Read(c *gin.Context) {
 	id := c.Param("id")
 
@@ -39,7 +37,6 @@ func (self UserController) Read(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, user)
 }
 
-// ! ========================================
 func (self UserController) Create(c *gin.Context) {
 	var user models.User
 
@@ -53,7 +50,7 @@ func (self UserController) Create(c *gin.Context) {
 	}
 
 	//! Business rules here
-	//! Like dont duplicated emails, etc...
+	//! Duplicated records, etc.
 	//! -
 
 	err = self.Repository.Create(user)
@@ -67,30 +64,28 @@ func (self UserController) Create(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
-// ! ========================================
-// func UpdateUser(c *gin.Context) {
-// 	var user models.User
+func (self UserController) Update(c *gin.Context) {
+	var user models.User
 
-// 	err := c.ShouldBindJSON(&user)
-// 	if err != nil {
-// 		c.IndentedJSON(http.StatusNotFound, gin.H{
-// 			"error": "cannot bind json",
-// 		})
-// 		return
-// 	}
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"error": "Cannot bind json: " + err.Error(),
+		})
+		return
+	}
 
-// 	err = repository.UpdateUser(user)
-// 	if err != nil {
-// 		c.IndentedJSON(http.StatusNotFound, gin.H{
-// 			"error": "cannot update user: " + err.Error(),
-// 		})
-// 		return
-// 	}
+	err = self.Repository.Update(user)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-//		c.Status(http.StatusCreated)
-//	}
-//
-// ! ========================================
+	c.Status(http.StatusOK)
+}
+
 func (self UserController) Delete(c *gin.Context) {
 	id := c.Param("id")
 

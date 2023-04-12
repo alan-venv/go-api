@@ -5,8 +5,9 @@ import (
 )
 
 type IUserRepository interface {
-	ReadAll() ([]models.User, error)
-	Read(string) (models.User, error)
+	ReadAll() (*[]models.User, error)
+	Read(string) (*models.User, error)
 	Create(models.User) error
+	Update(models.User) error
 	Delete(string) error
 }

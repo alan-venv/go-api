@@ -26,6 +26,7 @@ services:
       DB_CONNSTRING: "mongodb://venv:secret@mongodb:27017"
       API_PORT: "8080"
       API_MODE: "release"
+      API_ENV: "PROD"
     depends_on:
       - "mongodb"
 

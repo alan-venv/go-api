@@ -10,14 +10,14 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UserMongoRepository struct {
 	Database *mongo.Database
 }
 
-// ! ========================================
-func (self UserMongoRepository) ReadAll() ([]models.User, error) {
+func (self UserMongoRepository) ReadAll() (*[]models.User, error) {
 	db := self.Database
 	collection := db.Collection("user")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -42,11 +42,10 @@ func (self UserMongoRepository) ReadAll() ([]models.User, error) {
 		return nil, err
 	}
 
-	return users, nil
+	return &users, nil
 }
 
-// ! ========================================
-func (self UserMongoRepository) Read(id string) (models.User, error) {
+func (self UserMongoRepository) Read(id string) (*models.User, error) {
 	db := self.Database
 	collection := db.Collection("user")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -54,15 +53,14 @@ func (self UserMongoRepository) Read(id string) (models.User, error) {
 
 	var user models.User
 
-	err := collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
+	err := collection.FindOne(ctx, bson.M{"id": id}).Decode(&user)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
-// ! ========================================
 func (self UserMongoRepository) Create(user models.User) error {
 	db := self.Database
 	collection := db.Collection("user")
@@ -78,16 +76,36 @@ func (self UserMongoRepository) Create(user models.User) error {
 	return nil
 }
 
-// ! ========================================
-
-// ! ========================================
-func (self UserMongoRepository) Delete(id string) error {
-	db := self.Database
-	collection := db.Collection("user")
+func (self UserMongoRepository) Update(user models.User) error {
+	collection := self.Database.Collection("user")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	result, _ := collection.DeleteOne(ctx, bson.M{"_id": id})
+	filter := bson.M{"id": user.ID}
+	update := bson.M{"$set": bson.M{
+		"name":     user.Name,
+		"email":    user.Email,
+		"password": user.Password,
+	}}
+	opts := options.Update().SetUpsert(false)
+
+	result, err := collection.UpdateOne(ctx, filter, update, opts)
+	if err != nil {
+		return err
+	}
+	if result.ModifiedCount == 0 {
+		return errors.New("Cannot find or update user")
+	}
+
+	return nil
+}
+
+func (self UserMongoRepository) Delete(id string) error {
+	collection := self.Database.Collection("user")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	result, _ := collection.DeleteOne(ctx, bson.M{"id": id})
 
 	if result.DeletedCount == 0 {
 		return errors.New("Cannot find or delete user")

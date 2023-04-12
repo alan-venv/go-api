@@ -9,9 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var mongodb *mongo.Database
-
-func Start() {
+func StartMongo() *mongo.Database {
 	//! Set client options
 	clientOptions := options.Client().ApplyURI(os.Getenv("DB_CONNSTRING"))
 
@@ -27,9 +25,5 @@ func Start() {
 		log.Fatal("[MongoDB] Fail to ping on primary database!")
 	}
 
-	mongodb = client.Database("goapi")
-}
-
-func Get() *mongo.Database {
-	return mongodb
+	return client.Database("goapi")
 }
