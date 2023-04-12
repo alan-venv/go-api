@@ -1,16 +1,17 @@
 # Golang Rest API example
 
-## Used frameworks
-* gin
-* gorm
-* mongo-driver
+## Dev stack
+* Go
+* Gin
+* Gorm
+* Mongo-driver
 
 ## How to run
-Localhost + sqlite
+Localhost using sqlite
 ```
 go run src/server.go
 ```
-Docker + mongo
+Docker using mongo
 ```
 docker compose up --build
 ```
